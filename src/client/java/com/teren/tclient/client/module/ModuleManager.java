@@ -22,13 +22,17 @@ import com.teren.tclient.client.module.modules.movement.NoFall;
 import com.teren.tclient.client.module.modules.movement.Sneak;
 import com.teren.tclient.client.module.modules.movement.Speed;
 import com.teren.tclient.client.module.modules.movement.Step;
+import com.teren.tclient.client.module.modules.movement.ElytraFly;
+import com.teren.tclient.client.module.modules.movement.Spider;
 import com.teren.tclient.client.module.modules.movement.Velocity;
 import com.teren.tclient.client.module.modules.player.AutoEat;
 import com.teren.tclient.client.module.modules.player.AutoTool;
+import com.teren.tclient.client.module.modules.player.ChestStealer;
 import com.teren.tclient.client.module.modules.render.Esp;
 import com.teren.tclient.client.module.modules.render.FullBright;
 import com.teren.tclient.client.module.modules.render.Tracers;
 import com.teren.tclient.client.module.modules.render.Zoom;
+import com.teren.tclient.client.module.modules.world.Nuker;
 import com.teren.tclient.client.module.modules.world.Scaffold;
 import com.teren.tclient.client.screen.ClickGuiScreen;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
@@ -73,6 +77,8 @@ public class ModuleManager {
         modules.add(new AutoJump());
         modules.add(new FastSwim());
         modules.add(new Velocity());
+        modules.add(new Spider());
+        modules.add(new ElytraFly());
         // 渲染
         modules.add(new FullBright());
         modules.add(new Zoom());
@@ -81,8 +87,10 @@ public class ModuleManager {
         // 玩家
         modules.add(new AutoTool());
         modules.add(new AutoEat());
+        modules.add(new ChestStealer());
         // 世界
         modules.add(new Scaffold());
+        modules.add(new Nuker());
         // 杂项
         modules.add(new AutoRespawn());
         modules.add(new AntiAFK());
