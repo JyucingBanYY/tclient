@@ -1,6 +1,7 @@
 package com.teren.tclient.client.module;
 
 import com.teren.tclient.client.setting.Setting;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
@@ -35,10 +36,11 @@ public abstract class Module {
         }
     }
 
-    // 子类按需重写这三个方法：
-    public void onEnable() {}   // 模块被打开的瞬间
-    public void onDisable() {}  // 模块被关闭的瞬间
-    public void onTick() {}     // 模块开启时，每个游戏刻执行一次
+    // 子类按需重写下面这些方法：
+    public void onEnable() {}    // 模块被打开的瞬间
+    public void onDisable() {}   // 模块被关闭的瞬间
+    public void onTick() {}      // 开启时，每个游戏刻执行一次
+    public void onWorldRender(WorldRenderContext context) {} // 开启时，每帧在 3D 世界里渲染
 
     // 子类在构造方法里调用，登记自己的设置项
     protected void addSetting(Setting setting) {

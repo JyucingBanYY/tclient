@@ -1,7 +1,7 @@
 package com.teren.tclient.client.screen;
 
-import com.teren.tclient.client.module.Category;
 import com.teren.tclient.client.config.ConfigManager;
+import com.teren.tclient.client.module.Category;
 import com.teren.tclient.client.module.Module;
 import com.teren.tclient.client.module.ModuleManager;
 import com.teren.tclient.client.setting.BooleanSetting;
@@ -12,14 +12,20 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-// ClickGUI 菜单：按分类列出模块，每个模块下面显示它的设置。
+import java.util.HashSet;
+import java.util.Set;
+
+// ClickGUI 菜单：按分类列出模块。左键开关模块，右键展开/收起它的设置。
 public class ClickGuiScreen extends Screen {
 
-    private static final int PANEL_WIDTH = 110;
+    private static final int PANEL_WIDTH = 90;
     private static final int ROW_HEIGHT = 14;
     private static final int START_X = 10;
     private static final int START_Y = 10;
-    private static final int PANEL_GAP = 6;
+    private static final int PANEL_GAP = 4;
+
+    // 哪些模块的设置当前是展开的（static：关掉菜单再打开仍然记得）
+    private static final Set<Module> expanded = new HashSet<>();
 
     // 正在被拖动的滑块设置（没有就是 null）
     private Setting draggingSetting = null;
@@ -64,12 +70,19 @@ public class ClickGuiScreen extends Screen {
             }
             gui.fill(x, y, x + PANEL_WIDTH, y + ROW_HEIGHT, bg);
             gui.drawString(this.font, module.getName(), x + 4, y + 3, 0xFFFFFFFF);
+            // 有设置的模块，右侧显示 + / - （提示可右键展开）
+            if (!module.getSettings().isEmpty()) {
+                String mark = expanded.contains(module) ? "-" : "+";
+                gui.drawString(this.font, mark, x + PANEL_WIDTH - 9, y + 3, 0xFFAAAAAA);
+            }
             y += ROW_HEIGHT;
 
-            // 该模块的每个设置行
-            for (Setting setting : module.getSettings()) {
-                renderSetting(gui, setting, x, y);
-                y += ROW_HEIGHT;
+            // 展开时，画出它的设置行
+            if (expanded.contains(module)) {
+                for (Setting setting : module.getSettings()) {
+                    renderSetting(gui, setting, x, y);
+                    y += ROW_HEIGHT;
+                }
             }
         }
     }
@@ -103,35 +116,47 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) { // 鼠标左键
-            int x = START_X;
-            for (Category category : Category.values()) {
-                if (!categoryHasModules(category)) continue;
+        int x = START_X;
+        for (Category category : Category.values()) {
+            if (!categoryHasModules(category)) continue;
 
-                int y = START_Y + ROW_HEIGHT; // 跳过标题行
-                for (Module module : ModuleManager.getInstance().getModules()) {
-                    if (module.getCategory() != category) continue;
+            int y = START_Y + ROW_HEIGHT; // 跳过标题行
+            for (Module module : ModuleManager.getInstance().getModules()) {
+                if (module.getCategory() != category) continue;
 
-                    // 点到模块行 -> 开关模块
-                    if (isInside((int) mouseX, (int) mouseY, x, y)) {
-                        module.toggle();
-                        return true;
+                // 点到模块行
+                if (isInside((int) mouseX, (int) mouseY, x, y)) {
+                    if (button == 0) {
+                        module.toggle();           // 左键：开关模块
+                    } else if (button == 1) {
+                        toggleExpanded(module);    // 右键：展开/收起设置
                     }
-                    y += ROW_HEIGHT;
+                    return true;
+                }
+                y += ROW_HEIGHT;
 
-                    // 点到设置行
+                // 点到设置行（仅在展开时）
+                if (expanded.contains(module)) {
                     for (Setting setting : module.getSettings()) {
-                        if (isInside((int) mouseX, (int) mouseY, x, y)) {
+                        if (button == 0 && isInside((int) mouseX, (int) mouseY, x, y)) {
                             handleSettingClick(setting, x, mouseX);
                             return true;
                         }
                         y += ROW_HEIGHT;
                     }
                 }
-                x += PANEL_WIDTH + PANEL_GAP;
             }
+            x += PANEL_WIDTH + PANEL_GAP;
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private void toggleExpanded(Module module) {
+        if (expanded.contains(module)) {
+            expanded.remove(module);
+        } else {
+            expanded.add(module);
+        }
     }
 
     private void handleSettingClick(Setting setting, int panelX, double mouseX) {

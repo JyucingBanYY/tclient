@@ -8,6 +8,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import org.lwjgl.glfw.GLFW;
 
 public class TClientClient implements ClientModInitializer {
@@ -35,6 +36,9 @@ public class TClientClient implements ClientModInitializer {
 
 		// 每帧：画 HUD
 		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> HudRenderer.render(guiGraphics));
+
+		// 每帧：在 3D 世界里渲染（ESP、Tracers 等）
+		WorldRenderEvents.AFTER_ENTITIES.register(context -> manager.onWorldRender(context));
 
 		// 游戏关闭时：保存配置
 		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> ConfigManager.save());
