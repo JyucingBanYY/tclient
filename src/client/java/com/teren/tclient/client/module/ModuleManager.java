@@ -23,11 +23,13 @@ import com.teren.tclient.client.module.modules.movement.Sneak;
 import com.teren.tclient.client.module.modules.movement.Speed;
 import com.teren.tclient.client.module.modules.movement.Step;
 import com.teren.tclient.client.module.modules.movement.Velocity;
+import com.teren.tclient.client.module.modules.player.AutoEat;
 import com.teren.tclient.client.module.modules.player.AutoTool;
 import com.teren.tclient.client.module.modules.render.Esp;
 import com.teren.tclient.client.module.modules.render.FullBright;
 import com.teren.tclient.client.module.modules.render.Tracers;
 import com.teren.tclient.client.module.modules.render.Zoom;
+import com.teren.tclient.client.module.modules.world.Scaffold;
 import com.teren.tclient.client.screen.ClickGuiScreen;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.Minecraft;
@@ -78,6 +80,9 @@ public class ModuleManager {
         modules.add(new Tracers());
         // 玩家
         modules.add(new AutoTool());
+        modules.add(new AutoEat());
+        // 世界
+        modules.add(new Scaffold());
         // 杂项
         modules.add(new AutoRespawn());
         modules.add(new AntiAFK());
